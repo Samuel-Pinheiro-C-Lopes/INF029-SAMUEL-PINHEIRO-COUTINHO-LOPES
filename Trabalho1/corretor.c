@@ -33,12 +33,18 @@ int main()
 {
     //testSomar();
     //testFatorial();
-    //testQ1();
+	printf("\nQ1\n");
+    testQ1();
+	printf("\nQ2\n");
     testQ2();
-    /*testQ3();
+	printf("\nQ3\n");
+    testQ3();
+	printf("\nQ4\n");
     testQ4();
+	printf("\nQ5\n");
     testQ5();
-    testQ6();*/
+	printf("\nQ6\n");
+    testQ6();
 }
 
 void testSomar()
@@ -170,6 +176,16 @@ void testQ4()
     printf("%d\n", posicoes[3] == 36);
     printf("%d\n", posicoes[4] == 52);
     printf("%d\n", posicoes[5] == 54);
+
+	
+	strcpy(strTexto, "Olá, eu sou Olá, o melhor á do Olá inteiro... ha ha");
+	strcpy(strBusca, "Olá");
+	printf("TESTE: %d\n", q4(strTexto, strBusca, posicoes) == 2);
+	printf("%d\n", posicoes[0]);
+	printf("%d\n", posicoes[1]);
+	printf("%d\n", posicoes[2]);
+	printf("%d\n", posicoes[3]);
+	
 }
 
 void testQ5()

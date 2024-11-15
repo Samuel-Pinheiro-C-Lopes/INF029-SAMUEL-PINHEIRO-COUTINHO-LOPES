@@ -25,6 +25,9 @@
 #include "SamuelLopes20241160017.h" // Substitua pelo seu arquivo de header renomeado
 #include <stdlib.h>
 
+#define S_CHAR(num) (sizeof(char) * num)
+#define S_INT(num) (sizeof(char) * num)
+
 DataQuebrada quebraData(char data[]);
 
 /*
@@ -200,7 +203,9 @@ int validar_data_mes (int mes)
 
 int validar_data_dia (int dia, int mes, int ano)
 {
-	if (mes == 1 || mes == 3 || mes == 5 || mes == 7 || mes == 8 || mes == 10 || mes == 12)
+	if (dia < 1) 
+		return 0;
+	else if (mes == 1 || mes == 3 || mes == 5 || mes == 7 || mes == 8 || mes == 10 || mes == 12)
 	{
 		if (dia > 31)
 			return 0;
@@ -271,7 +276,7 @@ DiasMesesAnos q2(char datainicial[], char datafinal[])
 {
 
     //calcule os dados e armazene nas três variáveis a seguir
-    DiasMesesAnos dma;
+    DiasMesesAnos dma; dma.retorno = 1;
 
     if (q1(datainicial) == 0)
 	{
@@ -301,6 +306,8 @@ DiasMesesAnos q2(char datainicial[], char datafinal[])
 		datafinal += sizeof(char);
 		ext_string_para_int(&dt_fim.iAno, &datafinal);
 
+		//printf("\n%d %d | %d %d\n", dt_init.iMes, dt_fim.iMes, dt_init.iAno, dt_fim.iAno);
+
 		if ((dt_fim.iAno < dt_init.iAno))
 			dma.retorno = 4;
 		else if (dt_fim.iAno == dt_init.iAno)
@@ -315,45 +322,46 @@ DiasMesesAnos q2(char datainicial[], char datafinal[])
 		if (dma.retorno == 4)
 			return dma;
 		
-		DiasMesesAnos qtds;
-		qtds.qtdDias = 0;
-		qtds.qtdMeses = 0;
-		qtds.qtdAnos = 0;
+		dma.qtdDias = 0;
+		dma.qtdMeses = 0;
+		dma.qtdAnos = 0;
 
 		for (int a = dt_init.iAno; a < dt_fim.iAno; a++)
-			qtds.qtdAnos++;
+			dma.qtdAnos++;
+
+		//printf("\n ANOS: %d \n", dma.qtdAnos);
 
 		if (dt_fim.iMes < dt_init.iMes)
 		{
-			qtds.qtdAnos--;
-			qtds.qtdMeses += (dt_init.iMes - dt_fim.iMes);
+			dma.qtdAnos--;
+			dma.qtdMeses += (dt_init.iMes - dt_fim.iMes);
 		}
 		else 
 		{
-			qtds.qtdMeses += (dt_fim.iMes - dt_init.iMes);
+			dma.qtdMeses += (dt_fim.iMes - dt_init.iMes);
 		}
 
 		if (dt_fim.iDia < dt_init.iDia)
 		{
-			qtds.qtdMeses--;
+			dma.qtdMeses--;
 			int m = dt_init.iMes;
 			if (m == 1 || m == 3 || m == 5 || m == 7 || m == 8 || m == 10 || m == 12)
-				qtds.qtdDias += (31 - dt_init.iDia);
+				dma.qtdDias += (31 - dt_init.iDia);
 			else if (m != 2)
-				qtds.qtdDias += (30 - dt_init.iDia);
+				dma.qtdDias += (30 - dt_init.iDia);
 			else
 			{
 				if (dt_fim.iAno % 4 == 0 && dt_fim.iAno % 100 != 0)
-					qtds.qtdDias += (29 - dt_init.iDia);
+					dma.qtdDias += (29 - dt_init.iDia);
 				else 
-					qtds.qtdDias += (28 - dt_init.iDia);
+					dma.qtdDias += (28 - dt_init.iDia);
 			}
 
-			qtds.qtdDias += dt_fim.iDia;
+			dma.qtdDias += dt_fim.iDia;
 		}
 		else 
 		{
-			qtds.qtdDias += (dt_fim.iDia - dt_init.iDia);
+			dma.qtdDias += (dt_fim.iDia - dt_init.iDia);
 		}
 
 		/*
@@ -375,7 +383,6 @@ DiasMesesAnos q2(char datainicial[], char datafinal[])
 
 
 		//se tudo der certo
-		dma = qtds;
 		dma.retorno = 1;
 		return dma;
 
@@ -493,33 +500,40 @@ int q4(char *strTexto, char *strBusca, int posicoes[30])
 	printf("\nQTD OCORR: %d\n", qtdOcorrencias);
 	*/
 
-	int i, j;
-	i = 0; j = 0;
+	int i = 0;
+	int j = 0;
 	int x = -1;
 
 	int qtdOcorrencias = 0;
+	int qnt_acento_texto = 0;
+	int qnt_acento_busca = 0;
 
-	for (i = 0; *(strTexto + i) != '\0'; i++)
+	for (i = 0; *(strBusca + S_CHAR(i)) != '\0'; i++)
+		if (*(strBusca + S_CHAR(i)) < 0)
+			qnt_acento_busca++;
+
+	for (i = 0; *(strTexto + S_CHAR(i)) != '\0'; i++)
 	{
 		j = 0;
-		if (*(strTexto + i) == *(strBusca))
-			for (; *(strBusca + j) != '\0'; j++)
+		if (*(strTexto + S_CHAR(i)) < 0)
+			qnt_acento_texto++;
+
+		if (*(strTexto + S_CHAR(i)) == *(strBusca))
+			for (; *(strBusca + S_CHAR(j)) != '\0'; j++)
 			{
 				// printf("strBusca: %c  |  strTexto: %c\n", *(strBusca + j), *(strTexto + i + j));
-				if (*(strTexto + i + j) != *(strBusca + j))
+				if (*(strTexto + S_CHAR(i) + S_CHAR(j)) != *(strBusca + S_CHAR(j)))
 					break;
 			}
 
-		if (*(strBusca + j) == '\0')
+		if (*(strBusca + S_CHAR(j)) == '\0')
 		{
-			*(posicoes + ++x) = i + 1;
-			*(posicoes + ++x) = i + (j);
+			*(posicoes + S_INT(++x)) = i + 1 - qnt_acento_texto/2;
+			*(posicoes + S_INT(++x)) = i + (j) - qnt_acento_texto/2 - qnt_acento_busca/2;
 			// printf("\n [ %d : %d ] \n", *(posicoes + x - 1), *(posicoes + x));
-			i += j - 1;
+			i += j - 1 - qnt_acento_busca;
 			qtdOcorrencias++;
 		}
-
-		printf("\n---\n");
 	}
 
 	// printf("\nOcorrências: %d\n", qtdOcorrencias);
@@ -538,8 +552,87 @@ int q4(char *strTexto, char *strBusca, int posicoes[30])
 
 int q5(int num)
 {
+	int num_invertido =	inverter_numero(num);
+    return num_invertido;
+}
 
-    return num;
+int inverter_numero (int num)
+{
+	int qnt = 0; 
+	qnt_algarismos_int(&qnt, num);
+	char* num_string = int_para_string(num);
+	char* invertido_string = (char*) malloc((sizeof(char) * qnt) + 1);
+	int sentinela;
+	int atual;
+	int invertido_num;
+
+	if (*(num_string) == '-')
+	{
+		atual = 1;
+		sentinela = 0;
+		*(invertido_string) = '-';
+	}
+	else
+	{
+		atual = 0;
+		sentinela = -1;
+	}
+
+
+	for (int i = qnt - 1; i > sentinela; i--, atual++)
+		*(invertido_string + (sizeof(char) * atual)) = *(num_string + (sizeof(char) * i));
+
+	ext_string_para_int(&invertido_num, &invertido_string);
+
+	return invertido_num;
+}
+
+
+char* int_para_string (int num)
+{
+	char* string;
+    int qnt = 0;
+    qnt_algarismos_int(&qnt, num);
+
+	if (num < 0)
+	{
+	    string = (char*) malloc((qnt + 2) * sizeof(char));
+		*string = '-';
+		num *= -1;
+
+		for (int i = 0; i < qnt; i++)
+		{
+			*((string + 1) + ((qnt - 1) - i)) = (num % 10) + 48;
+			num /= 10;
+		}
+
+		string[qnt + 1] = '\0';
+	}
+	else 
+	{
+		string = (char*) malloc((qnt + 1) * sizeof(char));
+
+		for (int i = 0; i < qnt; i++)
+		{
+			*(string + ((qnt - 1) - i)) = (num % 10) + 48;
+			num /= 10;
+		}
+		
+		string[qnt] = '\0';
+	}
+
+    return string;
+}
+
+// Multiplica um número qualquer por outro número uma determinada quantidade de vezes
+void multiplicacao_sucessiva (int* num, int mult, int count)
+{
+    if (count == 0)
+		return;
+
+	*num *= mult;
+
+  	multiplicacao_sucessiva(num, mult, count - 1);
 }
 
 /*
@@ -554,11 +647,30 @@ int q5(int num)
 
 int q6(int numerobase, int numerobusca)
 {
-    int qtdOcorrencias = 0;
+	char* string_num_alvo = int_para_string(numerobase);
+	char* string_num_busca = int_para_string(numerobusca);
+	int* pos = (int*) malloc(sizeof(int) * 30);
+    int qtdOcorrencias = q4(string_num_alvo, string_num_busca, pos);
     return qtdOcorrencias;
 }
 
+/*
+int qnt_num_em_outro (int num_alvo, int num_busca)
+{
+	char* string_num_alvo = int_para_string(num_alvo);
+	char* string_num_busca = int_para_string(num_busca);
+	int j;
 
+	for (int i = 0; *(string_num_alvo + (sizeof(char) * i)) != '\0'; i++)
+	{
+		if (*(string_num_alvo + (sizeof(char) * i)) == *(string_num_busca))
+		{
+			for (j = i; 
+		}
+	}
+}
+
+*/
 
 
 DataQuebrada quebraData(char data[]){
