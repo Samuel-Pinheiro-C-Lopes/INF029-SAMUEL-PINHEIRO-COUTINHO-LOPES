@@ -259,6 +259,8 @@ Tabuleiro* inicializar_tabuleiro ()
 
     Tabuleiro* tabuleiro = (Tabuleiro*) malloc(sizeof(Tabuleiro)); // alocar tabuleiro
                                                                    
+    tabuleiro->nome_tabuleiro = "JOGO DA VELHA";
+
     tabuleiro->linhas_tabuleiro = (Linha*) malloc(sizeof(Linha) * NUM_LINHAS); // alocar linhas
                                                                         
     for (i = 0; i < NUM_LINHAS; i++)
@@ -297,7 +299,7 @@ void mostrar_tabuleiro(Tabuleiro* tabuleiro)
 
     system("clear");
     
-    printf("TABULEIRO DO JOGO DA VELHA\n");
+    printf("%s\n", tabuleiro->nome_tabuleiro);
     printf("     ");
     for (i = 0; i < NUM_COLUNAS; i++)
         printf("%c      ", tabuleiro->linhas_tabuleiro[0].colunas_linha[i].nome_coluna);

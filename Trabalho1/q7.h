@@ -25,7 +25,7 @@ typedef struct coluna Coluna;
 
 struct tabuleiro 
 {
-    char nome_tabuleiro;
+    char* nome_tabuleiro;
     Linha* linhas_tabuleiro;
 };
 
