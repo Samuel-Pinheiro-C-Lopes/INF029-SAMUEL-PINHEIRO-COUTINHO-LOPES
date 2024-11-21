@@ -8,7 +8,7 @@ int main ()
     
     if (NUM_COLUNAS != NUM_LINHAS)
     {
-        printf("\nO PROGRAMA FOI INICIADO COM UM FORMATO INCOMPATÍVEL COM O DE UM JOGO DA VELHA, SUAS FUNÇÕES PODEM NÃO FUNCIONAR CORRETAMENTE...");
+        printf("\nO PROGRAMA FOI INICIADO COM UM FORMATO INCOMPATÍVEL COM O DE JOGO BATALHA NAVAL, SUAS FUNÇÕES PODEM NÃO FUNCIONAR CORRETAMENTE...");
         printf("Número de linhas: %d;\nNúmero de colunas: %d.", NUM_LINHAS, NUM_COLUNAS);
         printf("\n\nAperte enter para continuar, ou 0 e enter para encerrar... ");
         if (getchar() == '0')
@@ -27,7 +27,7 @@ int main ()
     printf("Entre com o número de navios do jogo [mínimo 5]: ");
     ext_ler_int_f(&numero_navios, 10);
     
-    if (numero_navios < 2)
+    if (numero_navios < 5)
     {
         printf("\nNúmero inválida...\n");
         getchar();
@@ -41,6 +41,7 @@ int main ()
 
     int count = 0;
 
+    system("clear");
     printf("Inserção do jogador 1!\nAperte enter para prosseguir...");
     getchar();
     while (count < numero_navios)
@@ -64,7 +65,7 @@ int main ()
             }
             case (JOGADOR_2):
             {
-                printf("JOGADOR 2 VENCEU!!!");
+                printf("JOGADOR 2 VENCEU!!!\n");
                 getchar();
                 jogo_rodando = 0;
                 break;
@@ -78,7 +79,7 @@ int main ()
             }
             case (JOGADOR_1):
             {
-                printf("JOGADOR 1 VENCEU!!!");
+                printf("JOGADOR 1 VENCEU!!!\n");
                 getchar();
                 jogo_rodando = 0;
                 break;
@@ -210,7 +211,7 @@ void interface_insercao(Tabuleiro* tabuleiro, int* count)
     else
         tam = 2;
 
-    printf("\nTamanho do navio atual: %d;\nAperte enter para prosseguir...", tam);
+    printf("Tamanho do navio atual: %d;\nAperte enter para prosseguir...", tam);
     getchar();
     system("clear");
     switch(interface_menu_inserir_navios(tabuleiro, tam))
@@ -320,7 +321,7 @@ void mostrar_tabuleiro(Tabuleiro* tabuleiro, int jogador)
         printf("\n");
     }
     
-    printf("\n\n");
+    printf("\n");
 }
 
 int interface_menu_inserir_navios (Tabuleiro* tabuleiro, int tam)
@@ -328,11 +329,12 @@ int interface_menu_inserir_navios (Tabuleiro* tabuleiro, int tam)
     char sentido[2];
     char opcao[4];
     mostrar_tabuleiro(tabuleiro, tabuleiro->jogador);
-    printf("\nJOGADOR: %d;", tabuleiro->jogador);
+    printf("JOGADOR: %d;", tabuleiro->jogador);
     printf("\nEntre com o sentido de inserção do navio ['H' para horizontal e 'V' para vertical]: ");
     ler_string_f(sentido, 2);
-    printf("\nEntre com a posição [formato: LINHA/COLUNA]: ");
+    printf("Entre com a posição [formato: LINHA/COLUNA]: ");
     ler_string_f(opcao, 4);
+    system("clear");
     return menu_inserir_navios(tabuleiro, opcao, sentido[0], tam);
 }
 
