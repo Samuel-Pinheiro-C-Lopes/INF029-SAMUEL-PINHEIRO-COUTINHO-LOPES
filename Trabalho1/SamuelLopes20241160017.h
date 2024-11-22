@@ -61,6 +61,7 @@ void ext_string_para_int (int* num, char** string);
 int tamanho_string (char* string);
 int validar_data (char* data);
 void proximo_valido (char** string);
+char* int_para_string (int num);
 
 
 void caixa_alta_c (char* c);

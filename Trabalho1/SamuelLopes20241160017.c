@@ -200,7 +200,9 @@ int validar_data_mes (int mes)
 
 int validar_data_dia (int dia, int mes, int ano)
 {
-	if (mes == 1 || mes == 3 || mes == 5 || mes == 7 || mes == 8 || mes == 10 || mes == 12)
+	if (dia <= 0 || mes <= 0)
+		return 0;
+	else if (mes == 1 || mes == 3 || mes == 5 || mes == 7 || mes == 8 || mes == 10 || mes == 12)
 	{
 		if (dia > 31)
 			return 0;
@@ -272,6 +274,7 @@ DiasMesesAnos q2(char datainicial[], char datafinal[])
 
     //calcule os dados e armazene nas três variáveis a seguir
     DiasMesesAnos dma;
+	dma.retorno = 1;
 
     if (q1(datainicial) == 0)
 	{
@@ -301,59 +304,64 @@ DiasMesesAnos q2(char datainicial[], char datafinal[])
 		datafinal += sizeof(char);
 		ext_string_para_int(&dt_fim.iAno, &datafinal);
 
-		if ((dt_fim.iAno < dt_init.iAno))
+		if (dt_fim.iAno < dt_init.iAno)
+		{
 			dma.retorno = 4;
+		}
 		else if (dt_fim.iAno == dt_init.iAno)
 		{
-			if((dt_fim.iMes < dt_init.iMes))
+			if(dt_fim.iMes < dt_init.iMes)
+			{
 				dma.retorno = 4;
-			else if ((dt_fim.iMes == dt_init.iMes))
-				if ((dt_fim.iDia < dt_init.iDia))
+			}
+			else if (dt_fim.iMes == dt_init.iMes)
+			{
+				if (dt_fim.iDia < dt_init.iDia)
 					dma.retorno = 4;
+			}
 		}
 
 		if (dma.retorno == 4)
 			return dma;
 		
-		DiasMesesAnos qtds;
-		qtds.qtdDias = 0;
-		qtds.qtdMeses = 0;
-		qtds.qtdAnos = 0;
+		dma.qtdDias = 0;
+		dma.qtdMeses = 0;
+		dma.qtdAnos = 0;
 
 		for (int a = dt_init.iAno; a < dt_fim.iAno; a++)
-			qtds.qtdAnos++;
+			dma.qtdAnos++;
 
 		if (dt_fim.iMes < dt_init.iMes)
 		{
-			qtds.qtdAnos--;
-			qtds.qtdMeses += (dt_init.iMes - dt_fim.iMes);
+			dma.qtdAnos--;
+			dma.qtdMeses += (dt_init.iMes - dt_fim.iMes);
 		}
 		else 
 		{
-			qtds.qtdMeses += (dt_fim.iMes - dt_init.iMes);
+			dma.qtdMeses += (dt_fim.iMes - dt_init.iMes);
 		}
 
 		if (dt_fim.iDia < dt_init.iDia)
 		{
-			qtds.qtdMeses--;
+			dma.qtdMeses--;
 			int m = dt_init.iMes;
 			if (m == 1 || m == 3 || m == 5 || m == 7 || m == 8 || m == 10 || m == 12)
-				qtds.qtdDias += (31 - dt_init.iDia);
+				dma.qtdDias += (31 - dt_init.iDia);
 			else if (m != 2)
-				qtds.qtdDias += (30 - dt_init.iDia);
+				dma.qtdDias += (30 - dt_init.iDia);
 			else
 			{
 				if (dt_fim.iAno % 4 == 0 && dt_fim.iAno % 100 != 0)
-					qtds.qtdDias += (29 - dt_init.iDia);
+					dma.qtdDias += (29 - dt_init.iDia);
 				else 
-					qtds.qtdDias += (28 - dt_init.iDia);
+					dma.qtdDias += (28 - dt_init.iDia);
 			}
 
-			qtds.qtdDias += dt_fim.iDia;
+			dma.qtdDias += dt_fim.iDia;
 		}
 		else 
 		{
-			qtds.qtdDias += (dt_fim.iDia - dt_init.iDia);
+			dma.qtdDias += (dt_fim.iDia - dt_init.iDia);
 		}
 
 		/*
@@ -368,19 +376,17 @@ DiasMesesAnos q2(char datainicial[], char datafinal[])
 
 		/*
 		printf("\n dt_init: %s \n", datainicial);
-		printf("\n QNT_DIAS: %d;\n QNT_MESES: %d;\n QNT_ANOS: %d.\n", qtds.qtdDias, qtds.qtdMeses, qtds.qtdAnos);
+		printf("\n QNT_DIAS: %d;\n QNT_MESES: %d;\n QNT_ANOS: %d.\n", qtds.qtdDias, dma.qtdMeses, dma.qtdAnos);
 		*/
 
 		//calcule a distancia entre as datas
 
 
 		//se tudo der certo
-		dma = qtds;
+	
 		dma.retorno = 1;
 		return dma;
-
-    }
-    
+	}
 }
 
 /*
@@ -498,10 +504,14 @@ int q4(char *strTexto, char *strBusca, int posicoes[30])
 	int x = -1;
 
 	int qtdOcorrencias = 0;
+	int qnt_acentos_texto = 0;
 
 	for (i = 0; *(strTexto + i) != '\0'; i++)
 	{
 		j = 0;
+		if (*(strTexto + i) < 0 )
+			qnt_acentos_texto++;
+
 		if (*(strTexto + i) == *(strBusca))
 			for (; *(strBusca + j) != '\0'; j++)
 			{
@@ -512,14 +522,13 @@ int q4(char *strTexto, char *strBusca, int posicoes[30])
 
 		if (*(strBusca + j) == '\0')
 		{
-			*(posicoes + ++x) = i + 1;
-			*(posicoes + ++x) = i + (j);
+			*(posicoes + ++x) = i + 1 - (qnt_acentos_texto/2);
+			*(posicoes + ++x) = i + (j) - (qnt_acentos_texto/2);
 			// printf("\n [ %d : %d ] \n", *(posicoes + x - 1), *(posicoes + x));
 			i += j - 1;
 			qtdOcorrencias++;
 		}
 
-		printf("\n---\n");
 	}
 
 	// printf("\nOcorrências: %d\n", qtdOcorrencias);
@@ -538,8 +547,57 @@ int q4(char *strTexto, char *strBusca, int posicoes[30])
 
 int q5(int num)
 {
+	int qnt = 0;
+	qnt_algarismos_int(&qnt,  num);
+	char* num_char = int_para_string(num);
+	char* num_inv_char = (char*) malloc(sizeof(char) * (qnt + 1));
+	
+	for (int i = qnt - 1; i >= 0; i--)
+		num_inv_char[qnt - 1 - i] = num_char[i];
+	
+	num_inv_char[qnt] = '\0';
+	
+	int num_inv = 0;
 
-    return num;
+	ext_string_para_int(&num_inv, &num_inv_char);
+
+    return num_inv;
+}
+
+char* int_para_string (int num)
+{
+	char* string;
+    int qnt = 0;
+    qnt_algarismos_int(&qnt, num);
+
+	if (num < 0)
+	{
+	    string = (char*) malloc((qnt + 2) * sizeof(char));
+		*string = '-';
+		num *= -1;
+
+		for (int i = 0; i < qnt; i++)
+		{
+			*((string + 1) + ((qnt - 1) - i)) = (num % 10) + 48;
+			num /= 10;
+		}
+
+		string[qnt + 1] = '\0';
+	}
+	else 
+	{
+		string = (char*) malloc((qnt + 1) * sizeof(char));
+
+		for (int i = 0; i < qnt; i++)
+		{
+			*(string + ((qnt - 1) - i)) = (num % 10) + 48;
+			num /= 10;
+		}
+		
+		string[qnt] = '\0';
+	}
+
+    return string;
 }
 
 /*
@@ -554,8 +612,11 @@ int q5(int num)
 
 int q6(int numerobase, int numerobusca)
 {
-    int qtdOcorrencias = 0;
-    return qtdOcorrencias;
+	char* numero_base_str = int_para_string(numerobase);
+	char* numero_busca_str = int_para_string(numerobusca);
+	int posicoes[30];
+	int qnt_ocorrencias = q4(numero_base_str, numero_busca_str, posicoes);
+    return qnt_ocorrencias;
 }
 
 

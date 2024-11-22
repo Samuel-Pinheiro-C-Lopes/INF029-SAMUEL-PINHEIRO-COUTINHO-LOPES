@@ -51,6 +51,7 @@ void testQ1(){
     strcpy(str,"1/12/19");
     printf("%d\n",q1(str) == 1); 
 
+//    printf("\nFIM Q1\n");
 }
 
 void testQ2(){
@@ -101,8 +102,8 @@ void testQ2(){
     strcpy(datafinal,"07/07/2017");
     dma = q2(datainicial, datafinal);
     printf("%d\n",dma.retorno == 1);
-    printf("%d\n",dma.qtdDias == 1);
-    printf("%d\n",dma.qtdMeses == 1);
+    printf("DIA:%d\n",dma.qtdDias == 1);
+    printf("MESES%d\n",dma.qtdMeses == 1);
     printf("%d\n",dma.qtdAnos == 0);
 
     //teste 4
@@ -183,7 +184,7 @@ void testQ2(){
     printf("%d\n",dma.qtdMeses == 1);
     printf("%d\n",dma.qtdAnos == 0);
 
-	printf("\n\nFIM Q2\n\n");
+	//printf("\nFIM Q2\n");
 
 }
 
@@ -206,7 +207,7 @@ void testQ3(){
     printf("%d\n",q3(str, 'E', 1) == 2);
     printf("%d\n",q3(str, 'S', 1) == 0);
 
-	printf("\n FIM Q3\n");
+//	printf("\nFIM Q3\n");
     
 }
 
@@ -262,6 +263,7 @@ void testQ4(){
     printf("%d\n",posicoes[6]==26);
     printf("%d\n",posicoes[7]==27);
 
+ //   printf("\nFIM Q4\n");
 }
 
 
@@ -276,6 +278,8 @@ void testQ5(){
     printf("%d\n",q5(80) == 8);
     printf("%d\n",q5(8) == 8);
     printf("%d\n",q5(1234) == 4321);
+    
+//    printf("\nFIM Q5\n");
 }
 
 void testQ6(){
@@ -290,6 +294,7 @@ void testQ6(){
     printf("%d\n",q6(544444, 4) == 5);
     printf("%d\n",q6(1234562354, 32) == 0);
 
+//    printf("\nFIM Q6\n");
 }
       
         
