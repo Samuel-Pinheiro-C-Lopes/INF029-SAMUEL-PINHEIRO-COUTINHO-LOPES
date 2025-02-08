@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #define TAM 10
+#define LINHA_MAX (255)
 
 #include "EstruturaVetores.h"
 
@@ -17,7 +18,9 @@ int convStrInt(char *str);
 char* proxOcorrencia(char *idxStr, char *separadores);
 char* obterSubstring(char *idxStr, char *separadores);
 void copiarString(char *fonte, char *alvo, int tamMax);
+void escreverArquivo (void);
 
+/*
 int main (void) 
 {
     char teste[200];
@@ -31,6 +34,7 @@ int main (void)
     
     return EXIT_SUCCESS; 
 }
+*/
 /*
 Objetivo: criar estrutura auxiliar na posição 'posicao'.
 com tamanho 'tamanho'
@@ -558,6 +562,7 @@ para poder liberar todos os espaços de memória das estruturas auxiliares.
 
 void finalizar()
 {
+    escreverArquivo();
     for (int i = 0; i < TAM; i++)
         if (vetorPrincipal[i] != NULL)
             free(vetorPrincipal[i]);
@@ -652,3 +657,37 @@ int convStrInt(char *str)
     return num;
 }
 
+
+// ESCREVER ARQUIVO
+
+// Sumário: escreve um arquivo "vetorPrincipal.dados" que vai armazenar todos os dados
+// de todas as estruturas auxiliares obtidas no vetorPrincipal durante o tempo de 
+// execução do programa
+// Parâmetros: <void>
+// Retorna: <void>
+void escreverArquivo (void)
+{
+    FILE *saida = fopen("vetorPrincipal.dados", "w");
+    if (saida == NULL)
+    {
+        printf("\nERRO AO CRIAR ARQUIVO DE SAÍDA");
+        return;
+    }
+
+    int i, j, tam;
+    for (i = 0; i < TAM; i++)
+    {
+        if (vetorPrincipal[i] == NULL)
+            continue; // sentinela caso não haja estrutura auxiliar na posição designada
+
+        tam = vetorPrincipal[i]->tam;
+        fprintf(saida, "%d;%d;%d;", i, tam, vetorPrincipal[i]->idx);
+    
+        for (j = 0; j < tam; j++)
+            fprintf(saida, "%d;", vetorPrincipal[i]->vet[j]);
+        
+        fprintf(saida, "\n");
+    }
+    
+    fclose(saida);
+}
