@@ -22,6 +22,8 @@ char* obterSubstring(char *idxStr, char *separadores);
 void copiarString(char *fonte, char *alvo, int tamMax);
 void escreverArquivo (void);
 void lerNumerosLinha(int pos, char *idxStr);
+void lerArquivo(void);
+
 
 /*
 int main (void) 
@@ -555,6 +557,7 @@ void inicializar()
 {
     for (int i = 0; i < TAM; i++)
         vetorPrincipal[i] = NULL;
+    lerArquivo();
 }
 
 /*
@@ -565,7 +568,9 @@ para poder liberar todos os espaços de memória das estruturas auxiliares.
 
 void finalizar()
 {
-    escreverArquivo();
+    if (fopen(NOME_ARQUIVO, "r") == NULL)
+        escreverArquivo();
+
     for (int i = 0; i < TAM; i++)
         if (vetorPrincipal[i] != NULL)
             free(vetorPrincipal[i]);
@@ -599,19 +604,20 @@ void copiarString(char *fonte, char *alvo, int tamMax)
 char* obterSubstring(char *idxString, char *separadores) 
 {
     static char substring[tam_max_substr];
-    int i, k;
+    char *idxSub;
+    char *idxSep;
 
-    for (i = 0; idxString[i] != '\0'; i++)
+    for (idxSub = substring; *(idxString) != '\0'; idxString += sizeof(char), idxSub += sizeof(char))
     {
-        for (k = 0; separadores[k] != '\0'; k++)
-            if (idxString[i] == separadores[k])
+        for (idxSep = separadores; *(idxSep) != '\0'; idxSep += sizeof(char))
+            if (*(idxString) == *(idxSep))
                 goto fim;
         
-        substring[i] = idxString[i];
+        *(idxSub) = *(idxString);
     }
 
     fim: 
-    substring[++i] = '\0';
+    *(idxSub) = '\0';
     return substring;
 }
 
@@ -623,6 +629,11 @@ char* obterSubstring(char *idxString, char *separadores)
 // um dos separadores>
 char* proxOcorrencia(char *idxStr, char *separadores)
 {
+    if (*(idxStr) != '\0')
+        idxStr += sizeof(char);
+    else 
+        goto fim;
+
     char *idxSep;
 
     for (; *(idxStr) != '\0'; idxStr += sizeof(char))
@@ -630,7 +641,8 @@ char* proxOcorrencia(char *idxStr, char *separadores)
             if (*(idxStr) == *(idxSep))
                 goto fim;
             
-    fim: return idxStr;
+    fim: 
+    return idxStr;
 }
 
 // Sumário: converte uma string em um inteiro
@@ -666,12 +678,12 @@ int convStrInt(char *str)
 // base nas linhas do arquivo
 // Parâmetros: <void>
 // Retorna: <void>
-void lerArquivo (void)
+void lerArquivo(void)
 {
     FILE *entrada = fopen(NOME_ARQUIVO, "r");
     char linha[LINHA_MAX];
     char *idxStr;
-    int pos, tam, idx, num;
+    int pos, tam; 
     
     if (entrada == NULL)
     {
@@ -683,17 +695,14 @@ void lerArquivo (void)
     {
         idxStr = linha;
         // posição
-        pos = convStrInt(obterSubstring(idxStr, SEPARADOR));
-        idxStr = proxOcorrencia(idxStr, SEPARADOR);
+        pos = convStrInt(obterSubstring(idxStr, SEPARADOR)) + 1;
+        idxStr = proxOcorrencia(idxStr, "-0123456789");
         // tamanho
         tam = convStrInt(obterSubstring(idxStr, SEPARADOR));
-        idxStr = proxOcorrencia(idxStr, SEPARADOR);
         
         criarEstruturaAuxiliar(pos, tam);
         lerNumerosLinha(pos, idxStr);
     }
-    
-    fclose(entrada);
 }
 
 // Sumário: lê todos os números a partir de um indexador separados por ';' e os adiciona
@@ -704,15 +713,19 @@ void lerArquivo (void)
 void lerNumerosLinha(int pos, char *idxStr)
 {
     int num;
-    switch (*(idxStr)) {
-        case('\0'):
-        case('\n'): break;
-        case(';'): 
-        {
-            idxStr = proxOcorrencia(idxStr, "-0123456789");
-            num = convStrInt(obterSubstring(idxStr, SEPARADOR));
-            inserirNumeroEmEstrutura(pos, num);
-            idxStr = proxOcorrencia(idxStr, ";\n");
+    while ((*idxStr) != '\0')
+    {
+
+        idxStr = proxOcorrencia(idxStr, "-0123456789\n");
+        switch (*(idxStr)) {
+            case('\0'):
+            case('\n'): break;
+            default:
+            {
+                num = convStrInt(obterSubstring(idxStr, SEPARADOR));
+                inserirNumeroEmEstrutura(pos, num);
+                idxStr = proxOcorrencia(idxStr, ";\n");
+            }
         }
     }
 }
@@ -740,7 +753,7 @@ void escreverArquivo (void)
             continue; // sentinela caso não haja estrutura auxiliar na posição designada
 
         tam = vetorPrincipal[i]->tam;
-        fprintf(saida, "%d;%d;", i, tam);
+        fprintf(saida, "%d;%d;", i + 1, tam);
     
         for (j = 0; j < tam && j < vetorPrincipal[i]->idx; j++)
             fprintf(saida, "%d;", vetorPrincipal[i]->vet[j]);
