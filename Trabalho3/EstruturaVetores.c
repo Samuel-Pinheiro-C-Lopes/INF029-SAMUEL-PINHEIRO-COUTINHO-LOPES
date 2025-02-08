@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
-#define TAM 10
+#define NOME_ARQUIVO ("vetorPrincipal.dados")
+#define TAM (10)
 #define LINHA_MAX (255)
+#define SEPARADOR (";")
 
 #include "EstruturaVetores.h"
 
@@ -19,6 +21,7 @@ char* proxOcorrencia(char *idxStr, char *separadores);
 char* obterSubstring(char *idxStr, char *separadores);
 void copiarString(char *fonte, char *alvo, int tamMax);
 void escreverArquivo (void);
+void lerNumerosLinha(int pos, char *idxStr);
 
 /*
 int main (void) 
@@ -657,6 +660,62 @@ int convStrInt(char *str)
     return num;
 }
 
+// LER ARQUIVO
+
+// Sumário: ler um arquivo alvo e cria as estruturas auxiliares /  as preenche com
+// base nas linhas do arquivo
+// Parâmetros: <void>
+// Retorna: <void>
+void lerArquivo (void)
+{
+    FILE *entrada = fopen(NOME_ARQUIVO, "r");
+    char linha[LINHA_MAX];
+    char *idxStr;
+    int pos, tam, idx, num;
+    
+    if (entrada == NULL)
+    {
+        printf("\nERRO AO LER ARQUIVO DE ENTRADA\n");
+        return;
+    }
+    
+    while (fgets(linha, LINHA_MAX, entrada))
+    {
+        idxStr = linha;
+        // posição
+        pos = convStrInt(obterSubstring(idxStr, SEPARADOR));
+        idxStr = proxOcorrencia(idxStr, SEPARADOR);
+        // tamanho
+        tam = convStrInt(obterSubstring(idxStr, SEPARADOR));
+        idxStr = proxOcorrencia(idxStr, SEPARADOR);
+        
+        criarEstruturaAuxiliar(pos, tam);
+        lerNumerosLinha(pos, idxStr);
+    }
+    
+    fclose(entrada);
+}
+
+// Sumário: lê todos os números a partir de um indexador separados por ';' e os adiciona
+// à estrutura auxiliar
+// Parâmetros: <entrada: arquivo de entrada>, <pos: posição da estrutura a ser inserida> e
+// <idxStr: indexador atual da linha a ser lida>
+// Retorna: <void>
+void lerNumerosLinha(int pos, char *idxStr)
+{
+    int num;
+    switch (*(idxStr)) {
+        case('\0'):
+        case('\n'): break;
+        case(';'): 
+        {
+            idxStr = proxOcorrencia(idxStr, "-0123456789");
+            num = convStrInt(obterSubstring(idxStr, SEPARADOR));
+            inserirNumeroEmEstrutura(pos, num);
+            idxStr = proxOcorrencia(idxStr, ";\n");
+        }
+    }
+}
 
 // ESCREVER ARQUIVO
 
@@ -667,7 +726,7 @@ int convStrInt(char *str)
 // Retorna: <void>
 void escreverArquivo (void)
 {
-    FILE *saida = fopen("vetorPrincipal.dados", "w");
+    FILE *saida = fopen(NOME_ARQUIVO, "w");
     if (saida == NULL)
     {
         printf("\nERRO AO CRIAR ARQUIVO DE SAÍDA");
@@ -681,9 +740,9 @@ void escreverArquivo (void)
             continue; // sentinela caso não haja estrutura auxiliar na posição designada
 
         tam = vetorPrincipal[i]->tam;
-        fprintf(saida, "%d;%d;%d;", i, tam, vetorPrincipal[i]->idx);
+        fprintf(saida, "%d;%d;", i, tam);
     
-        for (j = 0; j < tam; j++)
+        for (j = 0; j < tam && j < vetorPrincipal[i]->idx; j++)
             fprintf(saida, "%d;", vetorPrincipal[i]->vet[j]);
         
         fprintf(saida, "\n");
